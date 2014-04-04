@@ -4,21 +4,13 @@ FS.debug = true;
  * File storages
  **********************************************/
 
-var s3options = Meteor.isServer ? {
-  region: Meteor.settings.AWS.region,
-  accessKeyId: Meteor.settings.AWS.accessKeyId,
-  secretAccessKey: Meteor.settings.AWS.secretAccessKey,
-  bucket: 'eventport-photos',
-  ACL: 'public-read'
-} : {};
-
-var s3eventPhotos = new FS.Store.S3('eventPhotos', _.extend({}, s3options, {
-  folder: 'full/'
-}));
+var eventPhotos = new FS.Store.FileSystem('eventPhotos', {
+  path: '~/uploads/full'
+});
 
 var thumbnailFormat = {width: 100, height: 100};
-var s3eventPhotosThumbnails = new FS.Store.S3('eventPhotosThumbnails', _.extend({}, s3options, {
-  folder: 'thumbnail/',
+var eventPhotosThumbnails = new FS.Store.FileSystem('eventPhotosThumbnails', {
+  path: '~/uploads/thumbnail',
   transformWrite: function (file, readStream, writeStream) {
     this.gm(readStream, file.name)
       .resize(thumbnailFormat.width, thumbnailFormat.height + '^')
@@ -27,7 +19,7 @@ var s3eventPhotosThumbnails = new FS.Store.S3('eventPhotosThumbnails', _.extend(
       .stream()
       .pipe(writeStream);
   }
-}));
+});
 
 /**********************************************
  * File collections
@@ -41,7 +33,7 @@ var defaultPhotoFilter = {
 };
 
 eventPhotos = new FS.Collection('eventPhotos', {
-  stores: [s3eventPhotosThumbnails, s3eventPhotos]//,
+  stores: [eventPhotosThumbnails, eventPhotos]//,
   //filter: defaultPhotoFilter
 });
 eventPhotos.allow({

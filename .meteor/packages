@@ -7,6 +7,5 @@ standard-app-packages
 autopublish
 insecure
 collectionFS
-cfs-s3
 cfs-filesystem
 cfs-ejson-file
