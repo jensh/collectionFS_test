@@ -22,12 +22,18 @@ eventPhotos.allow({
   }
 });
 
+events = new Meteor.Collection('events');
+
 if (Meteor.isClient) {
   Template.hello.events({
     'click input[type="submit"]': function () {
       var file = $('#file').get(0).files[0];
-      var result = eventPhotos.insert(file);
-      console.log('Upload result: ', result);
+      var fileObj = eventPhotos.insert(file);
+      console.log('Upload result: ', fileObj);
+      events.insert({
+        name: 'event',
+        file: fileObj
+      });
     }
   });
 }
